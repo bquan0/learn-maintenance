@@ -45,7 +45,5 @@ jobs:
           stages: stage1, stage2, stage3
           server-stage: stage5
           parallel: true
-          build-args: |
-            PY_VERSION=${{ matrix.python-version }}
-            base_stage=${{ matrix.base_stage }}
+          build-args: PY_VERSION=${{ matrix.python-version }}, base_stage=${{ matrix.base_stage }}
 
