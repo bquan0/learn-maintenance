@@ -18,7 +18,9 @@ jobs:
       packages: write
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        # python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8"]
+        base_stage: ["stage3", "stage4"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -30,6 +32,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2 
+
       # use the multistage docker build action instead of docker's action
       - uses: firehed/multistage-docker-build-action@v1
         id: build
@@ -37,7 +42,10 @@ jobs:
           context: .
           repository: ${{ env.REGISTRY }}/${{ github.repository }}/learn-maintenance-image-${{ matrix.python-version }}
           tag-latest-on-default: true
-          stages: stage1, stage2
-          server-stage: stage3
+          stages: stage1, stage2, stage3
+          server-stage: stage5
+          parallel: true
           build-args: |
             PY_VERSION=${{ matrix.python-version }}
+            base_stage=${{ matrix.base_stage }}
+
